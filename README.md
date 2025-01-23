@@ -1,2 +1,2 @@
-# BaseAutomatizaci-nPOM
+# BaseAutomatizacion-POM
 POM - JAVA - CUCUMBER - GRADLE
