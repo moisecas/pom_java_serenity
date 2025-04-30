@@ -2,8 +2,9 @@ package pages;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.List; 
 
+import io.github.cdimascio.dotenv.Dotenv;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -11,6 +12,8 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.edge.EdgeDriver; 
 
 
 import io.github.bonigarcia.wdm.WebDriverManager;
@@ -20,7 +23,7 @@ public class basePage {
      * Declaración de una variable estática 'driver' de tipo WebDriver
      * Esta variable va a ser compartida por todas las instancias de BasePage y sus subclases
      */
-    protected static WebDriver driver;
+    public static WebDriver driver;
     /*
      * Declaración de una variable de instancia 'wait' de tipo WebDriverWait.
      * Se inicializa inmediatamente con una instancia dew WebDriverWait utilizando el 'driver' estático
@@ -32,13 +35,42 @@ public class basePage {
      * Configura el WebDriver para Chrome usando WebDriverManager.
      * WebDriverManager va a estar descargando y configurando automáticamente el driver del navegador
     */
-    static {
-        WebDriverManager.chromedriver().setup();
+    // static {
+    //     WebDriverManager.chromedriver().setup();
  
-        //Inicializa la variable estática 'driver' con una instancia de ChromeDriver
-        driver = new ChromeDriver();
+    //     //Inicializa la variable estática 'driver' con una instancia de ChromeDriver
+    //     driver = new ChromeDriver();
+    // }
+    
+    static { 
+        // 1) Carga .env (si usas java-dotenv)
+        Dotenv dotenv = Dotenv.configure()
+                             .ignoreIfMissing()
+                             .load();
+        // 2) Lee variable: primero System.getProperty (pasada desde Gradle), si no, del entorno
+        String browser = System.getProperty("browser",
+                           System.getenv("BROWSER"));
+        if (browser == null) browser = dotenv.get("BROWSER", "chrome");
+        browser = browser.toLowerCase();
+
+        // 3) Switch para inicializar el driver
+        switch (browser) {
+            case "firefox":
+                WebDriverManager.firefoxdriver().setup();
+                driver = new FirefoxDriver();
+                break;
+            case "edge":
+                WebDriverManager.edgedriver().setup();
+                driver = new EdgeDriver();
+                break;
+            case "chrome":
+            default:
+                WebDriverManager.chromedriver().setup();
+                driver = new ChromeDriver();
+        }
     }
- 
+
+
     /*
      * Este es el constructor de BasePage que acepta un objeto WebDriver como argumento.
      */
@@ -52,7 +84,7 @@ public class basePage {
     }
 
     // Encuentra y devuelve un WebElement en la página utilizando un locator XPath, esperando a que esté presentente en el DOM
-    private WebElement Find(String locator){
+    protected WebElement Find(String locator){
         return wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(locator)));
     }
  
@@ -132,5 +164,13 @@ public class basePage {
         throw new RuntimeException("Opción no encontrada: " + value);
     }
     
+    // Método para verificar si un elemento está visible en la página
+    public boolean isElementDisplayed(String locator) {
+        try {
+            return wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(locator))).isDisplayed();
+            } catch (Exception e) {
+                return false; // Si el elemento no aparece, retorna false en lugar de lanzar error
+        }
+    }
     
 }

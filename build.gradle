@@ -4,15 +4,38 @@
  * This generated file contains a sample Java application project to get you started.
  * For more details on building Java & JVM projects, please refer to https://docs.gradle.org/8.8/userguide/building_java_projects.html in the Gradle documentation.
  */
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+        maven { url "https://oss.sonatype.org/content/groups/public/" }
+    }
+    dependencies {
+        classpath "net.serenity-bdd:serenity-gradle-plugin:3.2.3"
+    }
+}
+
+// plugins {
+//     // Apply the application plugin to add support for building a CLI application in Java.
+//     id 'application'
+
+// }
 
 plugins {
-    // Apply the application plugin to add support for building a CLI application in Java.
-    id 'application'
+  id 'java'
+  id 'net.serenity-bdd.serenity-gradle-plugin' version '4.2.22'
 }
+
+// Aplica el plugin agregador de Serenity
+//apply plugin: "net.serenity-bdd.aggregator"
+
+
 
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
+    // maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+    // maven { url "https://oss.sonatype.org/content/groups/public/" }
 }
 
 dependencies {
@@ -30,23 +53,46 @@ dependencies {
     // https://mvnrepository.com/artifact/io.cucumber/cucumber-java
     implementation group: 'io.cucumber', name: 'cucumber-java', version: '7.20.1'
 
+
     // https://mvnrepository.com/artifact/io.cucumber/cucumber-junit
     testImplementation group: 'io.cucumber', name: 'cucumber-junit', version: '7.20.1'
 
     // https://mvnrepository.com/artifact/io.github.bonigarcia/webdrivermanager
     implementation group: 'io.github.bonigarcia', name: 'webdrivermanager', version: '5.9.2'
 
+    //dependencia para usar las variables de entorno
+    implementation 'io.github.cdimascio:java-dotenv:5.2.2'
+
+    // // Dependencia para Serenity Core (para reportes y funcionalidad base)
+    // testImplementation("net.serenity-bdd:serenity-core:3.2.3")
+
+    // // Serenity Cucumber 7: usa la versión disponible, por ejemplo 2.4.34
+    // testImplementation("net.serenity-bdd:serenity-cucumber:4.2.17")
+
+    testImplementation 'net.serenity-bdd:serenity-core:4.2.22'
+    testImplementation 'net.serenity-bdd:serenity-cucumber:4.2.22'
+
+    implementation 'com.browserstack:browserstack-local-java:1.0.6'
+
 
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
 java {
+    sourceCompatibility = JavaVersion.VERSION_18
+    targetCompatibility = JavaVersion.VERSION_18
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(18)
     }
 }
 
 
+
 tasks.named('test') {
     systemProperty "cucumber.options", System.getProperty("cucumber.options")
+    systemProperty "serenity.requirements.dir", "requirements"
+    systemProperty "serenity.test.root", "src/test/java"
+    // Si no está definido en el entorno, por defecto chrome
+    def browser = System.getenv('BROWSER') ?: 'chrome'
+    systemProperty 'webdriver.driver', browser
 }
