@@ -12,7 +12,7 @@ public class Hooks {
 
     @Before
     public void setUp() throws MalformedURLException {
-        // Obtiene el driver de BrowserStack y lo pone en tu basePage
+        // Obtiene el driver de BrowserStack y lo pone basePage
         WebDriver driver = BrowserStackDriver.getDriver();
         basePage.driver = driver;
     }
