@@ -35,6 +35,7 @@ public class basePage {
      * Configura el WebDriver para Chrome usando WebDriverManager.
      * WebDriverManager va a estar descargando y configurando automáticamente el driver del navegador
     */
+
     // static {
     //     WebDriverManager.chromedriver().setup();
  
@@ -42,33 +43,35 @@ public class basePage {
     //     driver = new ChromeDriver();
     // }
     
-    static { 
-        //Carga .env 
-        Dotenv dotenv = Dotenv.configure()
-                             .ignoreIfMissing()
-                             .load();
-        //Lee variable: primero System.getProperty 
-        String browser = System.getProperty("browser",
-                           System.getenv("BROWSER"));
-        if (browser == null) browser = dotenv.get("BROWSER", "chrome");
-        browser = browser.toLowerCase();
 
-        //Switch para inicializar el driver, mapea en caso del valor lanza el navegador esperado 
-        switch (browser) {
-            case "firefox":
-                WebDriverManager.firefoxdriver().setup();
-                driver = new FirefoxDriver();
-                break;
-            case "edge":
-                WebDriverManager.edgedriver().setup();
-                driver = new EdgeDriver();
-                break;
-            case "chrome":
-            default:
-                WebDriverManager.chromedriver().setup();
-                driver = new ChromeDriver();
-        }
-    }
+    // metodo para lanzar el navegador sin necesidad de usar browserstack (de reserva mientras tanto)
+    // static { 
+    //     //Carga .env 
+    //     Dotenv dotenv = Dotenv.configure()
+    //                          .ignoreIfMissing()
+    //                          .load();
+    //     //Lee variable: primero System.getProperty 
+    //     String browser = System.getProperty("browser",
+    //                        System.getenv("BROWSER"));
+    //     if (browser == null) browser = dotenv.get("BROWSER", "chrome");
+    //     browser = browser.toLowerCase();
+
+    //     //Switch para inicializar el driver, mapea en caso del valor lanza el navegador esperado 
+    //     switch (browser) {
+    //         case "firefox":
+    //             WebDriverManager.firefoxdriver().setup();
+    //             driver = new FirefoxDriver();
+    //             break;
+    //         case "edge":
+    //             WebDriverManager.edgedriver().setup();
+    //             driver = new EdgeDriver();
+    //             break;
+    //         case "chrome":
+    //         default:
+    //             WebDriverManager.chromedriver().setup();
+    //             driver = new ChromeDriver();
+    //     }
+    // }
 
 
     /*
