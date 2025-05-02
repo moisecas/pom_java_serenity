@@ -43,11 +43,11 @@ public class basePage {
     // }
     
     static { 
-        // 1) Carga .env (si usas java-dotenv)
+        //Carga .env 
         Dotenv dotenv = Dotenv.configure()
                              .ignoreIfMissing()
                              .load();
-        // 2) Lee variable: primero System.getProperty (pasada desde Gradle), si no, del entorno
+        //Lee variable: primero System.getProperty 
         String browser = System.getProperty("browser",
                            System.getenv("BROWSER"));
         if (browser == null) browser = dotenv.get("BROWSER", "chrome");

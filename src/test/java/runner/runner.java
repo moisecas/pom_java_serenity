@@ -5,13 +5,11 @@ import org.junit.BeforeClass;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
-
 import io.cucumber.java.Before;
 import io.cucumber.junit.Cucumber;
 import io.cucumber.junit.CucumberOptions;
 import pages.basePage;
 import net.serenitybdd.cucumber.CucumberWithSerenity;
-
 // @RunWith(Cucumber.class)
 // @CucumberOptions(
 //     features = "src/test/resources/features/listPlayer.feature",
@@ -25,18 +23,13 @@ import net.serenitybdd.cucumber.CucumberWithSerenity;
 //         monochrome = true
     
 // )
-
-
-
 @RunWith(CucumberWithSerenity.class)
 @CucumberOptions(
   features = "src/test/resources/features/listPlayer.feature",
-  glue     = "steps",
+  glue     = {"steps", "hooks"},
+
   monochrome = true
 )
-
-
-
 
 public class runner {
     @BeforeClass
