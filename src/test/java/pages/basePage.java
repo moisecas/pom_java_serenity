@@ -53,7 +53,7 @@ public class basePage {
         if (browser == null) browser = dotenv.get("BROWSER", "chrome");
         browser = browser.toLowerCase();
 
-        // 3) Switch para inicializar el driver
+        //Switch para inicializar el driver, mapea en caso del valor lanza el navegador esperado 
         switch (browser) {
             case "firefox":
                 WebDriverManager.firefoxdriver().setup();
