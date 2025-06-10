@@ -4,19 +4,18 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List; 
 
-import io.github.cdimascio.dotenv.Dotenv;
+// import io.github.cdimascio.dotenv.Dotenv;  // Ya no necesario aquí
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.edge.EdgeDriver; 
 
-
-import io.github.bonigarcia.wdm.WebDriverManager;
+// import org.openqa.selenium.chrome.ChromeDriver;    // Comentado: no instanciamos aquí
+// import org.openqa.selenium.firefox.FirefoxDriver;  // Comentado: no instanciamos aquí
+// import org.openqa.selenium.edge.EdgeDriver;        // Comentado: no instanciamos aquí
+// import io.github.bonigarcia.wdm.WebDriverManager;  // Comentado: no instanciamos aquí
 
 public class basePage {
     /*
@@ -24,39 +23,31 @@ public class basePage {
      * Esta variable va a ser compartida por todas las instancias de BasePage y sus subclases
      */
     public static WebDriver driver;
+
     /*
      * Declaración de una variable de instancia 'wait' de tipo WebDriverWait.
-     * Se inicializa inmediatamente con una instancia dew WebDriverWait utilizando el 'driver' estático
-     * WebDriverWait se usa para poner esperas explícitas en los elementos web
+     * Se inicializa en el constructor, usando el driver inyectado
      */
-    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
- 
+    protected WebDriverWait wait;
+
     /* 
-     * Configura el WebDriver para Chrome usando WebDriverManager.
-     * WebDriverManager va a estar descargando y configurando automáticamente el driver del navegador
-    */
+     * Bloques comentados de inicialización local (reserva)
+     */
 
     // static {
     //     WebDriverManager.chromedriver().setup();
- 
-    //     //Inicializa la variable estática 'driver' con una instancia de ChromeDriver
     //     driver = new ChromeDriver();
     // }
-    
 
-    // metodo para lanzar el navegador sin necesidad de usar browserstack (de reserva mientras tanto)
     // static { 
-    //     //Carga .env 
     //     Dotenv dotenv = Dotenv.configure()
     //                          .ignoreIfMissing()
     //                          .load();
-    //     //Lee variable: primero System.getProperty 
     //     String browser = System.getProperty("browser",
     //                        System.getenv("BROWSER"));
     //     if (browser == null) browser = dotenv.get("BROWSER", "chrome");
     //     browser = browser.toLowerCase();
-
-    //     //Switch para inicializar el driver, mapea en caso del valor lanza el navegador esperado 
+    //
     //     switch (browser) {
     //         case "firefox":
     //             WebDriverManager.firefoxdriver().setup();
@@ -73,107 +64,109 @@ public class basePage {
     //     }
     // }
 
-
-    /*
-     * Este es el constructor de BasePage que acepta un objeto WebDriver como argumento.
+    /**
+     * Constructor de BasePage que acepta un objeto WebDriver como argumento.
+     * Aquí inyectamos el driver y configuramos el WebDriverWait.
      */
     public basePage(WebDriver driver) {
         basePage.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(5));
     }
  
-    //Método estático para navegar a una URL.
+    /**
+     * Método estático para navegar a una URL.
+     */
     public static void navigateTo(String url) {
         driver.get(url);
     }
 
-    // Encuentra y devuelve un WebElement en la página utilizando un locator XPath, esperando a que esté presentente en el DOM
+    /**
+     * Encuentra y devuelve un WebElement en la página utilizando un locator XPath,
+     * esperando a que esté presente en el DOM.
+     */
     protected WebElement Find(String locator){
         return wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(locator)));
     }
  
-    //Cerrar driver
+    /**
+     * Cierra el driver (navegador).
+     */
     public static void closeBrowser(){
-        driver.quit();
+        if (driver != null) {
+            driver.quit();
+        }
     }
 
-    // Click a un elemento
+    /**
+     * Click en un elemento identificado por XPath.
+     */
     public void clickElement(String locator){
         Find(locator).click();
     }
 
-    //Escribir texto
+    /**
+     * Escribir texto en un elemento identificado por XPath.
+     */
     public void write(String locator, String keysToSend){
-        Find(locator).clear();
-        Find(locator).sendKeys(keysToSend);
+        WebElement el = Find(locator);
+        el.clear();
+        el.sendKeys(keysToSend);
     }
 
-    //Selector - dropdown
-     public void selectFromDropdownByValue(String locator, String value){
+    /**
+     * Seleccionar opción de un dropdown por valor.
+     */
+    public void selectFromDropdownByValue(String locator, String value){
         Select dropdown = new Select(Find(locator));
- 
         dropdown.selectByValue(value);
     }
  
     public void selectFromDropdownByIndex(String locator, Integer index){
         Select dropdown = new Select(Find(locator));
- 
         dropdown.selectByIndex(index);
     }
  
     public int dropdownSize(String locator){
-        Select dropdown = new Select(Find(locator));
- 
-        List<WebElement> dropdownOptions = dropdown.getOptions();
- 
-        return dropdownOptions.size();
+        return new Select(Find(locator)).getOptions().size();
     }
 
-    //Devolver texto de todos los valores de un drop
+    /**
+     * Devolver texto de todos los valores de un dropdown.
+     */
     public List<String> getDropdownValues(String locator){
-        Select dropdown = new Select(Find(locator));
-
-        List<WebElement> dropdownOptions = dropdown.getOptions();
         List<String> values = new ArrayList<>();
-        for (WebElement option : dropdownOptions){
+        for (WebElement option : new Select(Find(locator)).getOptions()){
             values.add(option.getText());
         }
         return values;
     }
 
-     /**
+    /**
      * Método genérico para seleccionar una opción en un "dropdown" estilo React.
-     *
-     * @param dropdownLocator Locator del contenedor del dropdown.
-     * @param optionLocator   Locator de las opciones desplegadas.
-     * @param value           Valor visible de la opción a seleccionar.
      */
     public void selectFromDropdown(By dropdownLocator, By optionLocator, String value) {
-        // 1. Abrir el dropdown
         WebElement dropdown = wait.until(ExpectedConditions.elementToBeClickable(dropdownLocator));
         dropdown.click();
-
-        // 2. Esperar a que las opciones sean visibles
         List<WebElement> options = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(optionLocator));
-
-        // 3. Buscar la opción deseada y hacer clic
         for (WebElement option : options) {
             if (option.getText().equals(value)) {
                 option.click();
-                return; // Salimos del método después de hacer clic
+                return;
             }
         }
-
-        // Si no se encuentra la opción, lanzar una excepción
         throw new RuntimeException("Opción no encontrada: " + value);
     }
     
-    // Método para verificar si un elemento está visible en la página
+    /**
+     * Método para verificar si un elemento está visible en la página.
+     */
     public boolean isElementDisplayed(String locator) {
         try {
-            return wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(locator))).isDisplayed();
-            } catch (Exception e) {
-                return false; // Si el elemento no aparece, retorna false en lugar de lanzar error
+            return wait.until(
+                ExpectedConditions.visibilityOfElementLocated(By.xpath(locator))
+            ).isDisplayed();
+        } catch (Exception e) {
+            return false;
         }
     }
-    
 }

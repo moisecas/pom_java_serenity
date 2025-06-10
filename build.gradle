@@ -95,4 +95,12 @@ tasks.named('test') {
     // Si no está definido en el entorno, por defecto chrome
     def browser = System.getenv('BROWSER') ?: 'chrome'
     systemProperty 'webdriver.driver', browser
+
+    // // Le decimos a Serenity que NO instancie Chrome/Firefox/Edge solo,
+    // // sino que use el driver que nosotros le proporcionemos en código:
+    // systemProperty 'webdriver.driver', 'provided'
+
+    // // Propaga las -D… al proceso de tests (incluyendo -Dbrowser)
+    // systemProperties System.properties
 }
+

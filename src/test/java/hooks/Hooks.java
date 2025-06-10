@@ -1,6 +1,7 @@
 package hooks;
 
 import io.cucumber.java.Before;
+import io.cucumber.java.After; 
 import org.openqa.selenium.WebDriver;
 import java.net.MalformedURLException;
 
@@ -10,11 +11,11 @@ import pages.basePage;
 
 public class Hooks {
 
-    @Before
-    public void setUp() throws MalformedURLException { // metodo para inicializar el driver 
-        String browser = System.getProperty("browser", "chrome").toLowerCase(); // lee la variable de entorno BROWSER, si no existe se asigna chrome por defecto
-        WebDriver driver;  // declaracion de la variable driver
-        switch (browser) { // switch para inicializar el driver 
+    @Before(order = 0)
+    public void initDriver() throws MalformedURLException {
+        String browser = System.getProperty("browser", "chrome").toLowerCase();
+        WebDriver driver;
+        switch (browser) {
             case "firefox":
                 driver = LocalDriver.getDriver("firefox");
                 break;
@@ -28,6 +29,17 @@ public class Hooks {
             default:
                 driver = LocalDriver.getDriver("chrome");
         }
-        new basePage(driver); // se inicializa la clase basePage con el driver 
+        new basePage(driver);
+    }
+
+    @Before(order = 1)
+    public void prepareBrowser() {
+        basePage.driver.manage().deleteAllCookies();
+        basePage.driver.manage().window().maximize();
+    }
+
+    @After
+    public void tearDown() {
+        basePage.closeBrowser();
     }
 }

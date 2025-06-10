@@ -10,6 +10,7 @@ import io.cucumber.junit.Cucumber;
 import io.cucumber.junit.CucumberOptions;
 import pages.basePage;
 import net.serenitybdd.cucumber.CucumberWithSerenity;
+
 // @RunWith(Cucumber.class)
 // @CucumberOptions(
 //     features = "src/test/resources/features/listPlayer.feature",
@@ -25,21 +26,12 @@ import net.serenitybdd.cucumber.CucumberWithSerenity;
 // )
 @RunWith(CucumberWithSerenity.class)
 @CucumberOptions(
-  features = "src/test/resources/features/listPlayer.feature",
+  features = "src/test/resources/features/conciliationPlayer.feature",
   glue     = {"steps", "hooks"},
 
   monochrome = true
 )
 
 public class runner {
-    @BeforeClass
-    public static void setup() {
-        basePage.driver.manage().deleteAllCookies();
-        basePage.driver.manage().window().maximize(); //maximiza la ventana cuando se ejecuta el test
-    }
-
-    @AfterClass
-    public static void tearDown() {
-        basePage.closeBrowser(); //cierra el navegador al finalizar el test hereda de la clase basePage
-    }
+    
 }

@@ -17,6 +17,8 @@ public class menuPage extends basePage {
     //selectores del menu
     private By report = By.xpath("//body/div[@id='pcoded']/div[@class='pcoded-container navbar-wrapper']/div[@class='pcoded-main-container']/div[@class='pcoded-wrapper']/nav[@class='pcoded-navbar']/div[@class='nav-list']/div[@class='slimScrollDiv']/div[@class='pcoded-inner-navbar main-menu']/ul[@class='pcoded-item pcoded-left-item']/li[@class='pcoded-hasmenu active pcoded-trigger']/a[1]"); //reportes
     private By listPlayer = By.xpath("//span[normalize-space()='Lista de Jugadores']"); //lista de jugadores
+    private By conciliationPlayer = By.xpath("//span[normalize-space()='Conciliación de Jugadores']"); //conciliacion de jugadores
+    
 
     //metodos para entrar al reporte 
     public void navigateToReport() {
@@ -28,4 +30,10 @@ public class menuPage extends basePage {
         WebElement reportBtnListPlayer = wait.until(ExpectedConditions.elementToBeClickable(listPlayer));
         reportBtnListPlayer.click();
     }
+
+    public void navigateToconciliationPlayer() {
+        WebElement reportBtnConciliationPlayer = wait.until(ExpectedConditions.elementToBeClickable(conciliationPlayer));
+        reportBtnConciliationPlayer.click();
+    }
+
 }
