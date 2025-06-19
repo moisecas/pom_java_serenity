@@ -1,8 +1,6 @@
 @Reportes
-Feature: Ir a lista de jugadores
-  In order to monitor and manage players on the platform
-  As an authenticated user
-  I want to view the players list report
+Feature: Ir a conciliación de jugadores
+
 
   Background: Usuario autenticado
     Given ingreso a la pagina de login

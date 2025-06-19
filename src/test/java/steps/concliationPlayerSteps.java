@@ -38,7 +38,10 @@ public void deberia_visualizar_el_reporte_de_conciliacion_de_jugadores(String ex
         String.format("Esperado '%s' pero se encontró '%s'", expectedTitle, breadcrumbText)
     );
 
-    page.selectStartDateMonth("Enero");
+    //page.selectStartDateMonth("Enero"); 
+    page.setStartDateDirectly("2024-01-01T00:00:00"); 
+
+
     
     try {
         Thread.sleep(5000);

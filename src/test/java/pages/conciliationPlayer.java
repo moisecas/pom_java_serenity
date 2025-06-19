@@ -8,6 +8,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.JavascriptExecutor;
 
 
 public class conciliationPlayer extends basePage {
@@ -83,16 +84,29 @@ public void selectStartDateMonth(String monthName) {
     // 3) Espera a que aparezca el calendario desplegado
     wait.until(ExpectedConditions.visibilityOfElementLocated(calendarContainer));
 
-    // 4) Navega en el año
-    wait.until(ExpectedConditions.elementToBeClickable(yearNav)).click();
+    // // 4) Navega en el año
+    // wait.until(ExpectedConditions.elementToBeClickable(yearNav)).click();
 
-    // 5) Selecciona el mes
-    WebElement select = wait
-      .until(ExpectedConditions.elementToBeClickable(monthDropdown));
-    new Select(select).selectByVisibleText(monthName);
+    // // 5) Selecciona el mes
+    // WebElement select = wait
+    //   .until(ExpectedConditions.elementToBeClickable(monthDropdown));
+    // new Select(select).selectByVisibleText(monthName);
 }
 
-   
+
+// establece la fecha de inicio directamente en el input del datepicker 
+public void setStartDateDirectly(String isoDate) {
+  WebElement hiddenInput = driver.findElement(
+      By.id("table-filter-start-date-filter")
+  );
+  // llama al método interno setDate de Flatpickr
+  ((JavascriptExecutor) driver)
+      .executeScript(
+          "arguments[0]._flatpickr.setDate(arguments[1]);", 
+          hiddenInput, 
+          isoDate
+      );
+}
 
 
 
