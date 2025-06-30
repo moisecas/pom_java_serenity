@@ -20,10 +20,17 @@ public class loginSteps {
         login.navigateToUrl(EnvConfig.URL_QA);
     }
 
-    @When("ingreso con el usuario de entorno y la contraseña de entorno")
-    public void ingreso_con_usuario_y_contraseña_de_entorno() {
-        login.login(EnvConfig.TEST_USER, EnvConfig.TEST_PASS);
-    }
+    @Given("ingreso con el usuario de entorno y la contraseña de entorno")
+public void ingreso_con_usuario_y_contraseña_de_entorno() {
+    login.navigateToUrl(EnvConfig.URL_QA);
+    login.login(EnvConfig.TEST_USER, EnvConfig.TEST_PASS);
+}
+
+
+    // @When("ingreso con el usuario de entorno y la contraseña de entorno")
+    // public void ingreso_con_usuario_y_contraseña_de_entorno() {
+    //     login.login(EnvConfig.TEST_USER, EnvConfig.TEST_PASS);
+    // }
 
     @When("ingreso con el usuario de entorno y la contraseña fallida de entorno")
     public void ingreso_con_usuario_y_contraseña_fallida_de_entorno() {

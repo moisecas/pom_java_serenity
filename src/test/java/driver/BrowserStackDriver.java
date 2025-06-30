@@ -1,3 +1,4 @@
+// src/main/java/driver/BrowserStackDriver.java
 package driver;
 
 import config.EnvConfig;
@@ -5,7 +6,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,27 +13,36 @@ import java.util.Map;
 
 public class BrowserStackDriver {
 
-    public static WebDriver getDriver() throws MalformedURLException { //webdriver es la interfaz
-        DesiredCapabilities caps = new DesiredCapabilities();   // DesiredCapabilities es una clase que permite definir las capacidades del navegador
-        caps.setCapability("browserName", "Chrome"); //nombre del navegador
-        caps.setCapability("browserVersion", "latest");
+    public static WebDriver getDriver() throws Exception {
+        String user      = EnvConfig.BROWSERSTACK_USERNAME.trim();
+        String accessKey = EnvConfig.BROWSERSTACK_ACCESS_KEY.trim();
+        String buildName = EnvConfig.BROWSERSTACK_BUILD_NAME.trim();
 
-        Map<String, Object> browserstackOptions = new HashMap<>(); // HashMap es una clase que permite almacenar pares clave-valor
-        browserstackOptions.put("os", "Windows");   //sistema operativo
-        browserstackOptions.put("osVersion", "10"); //version del sistema operativo
-        browserstackOptions.put("projectName", "Mi Proyecto POM"); //nombre del proyecto
-        browserstackOptions.put("buildName", "Build #1"); //nombre de la build
-        browserstackOptions.put("sessionName", "Test con BrowserStack"); //nombre de la sesion
+        // **Nuevo** – lee de system properties (con fallback)
+        String browser        = System.getProperty("browserstack.capabilities.browserName",    "Chrome");
+        String browserVersion = System.getProperty("browserstack.capabilities.browserVersion", "latest");
 
-        caps.setCapability("bstack:options", browserstackOptions); //se le asigna las opciones de browserstack a las capacidades del navegador
+        DesiredCapabilities caps = new DesiredCapabilities();
+        caps.setCapability("browserName",    browser);
+        caps.setCapability("browserVersion", browserVersion);
 
-        String username = EnvConfig.BROWSERSTACK_USERNAME; //se obtiene el nombre de usuario de las variables de entorno
-        String accessKey = EnvConfig.BROWSERSTACK_ACCESS_KEY; //se obtiene la clave de acceso de las variables de entorno 
+        Map<String,Object> bstackOptions = new HashMap<>();
+        bstackOptions.put("userName",    user);
+        bstackOptions.put("accessKey",   accessKey);
+        bstackOptions.put("os",          System.getProperty("browserstack.capabilities.bstack:options.os","Windows"));
+        bstackOptions.put("osVersion",   System.getProperty("browserstack.capabilities.bstack:options.osVersion","10"));
+        bstackOptions.put("buildName",   buildName);
+        bstackOptions.put("sessionName", "Smoke Test");
+        bstackOptions.put("local",       true);
+        caps.setCapability("bstack:options", bstackOptions);
 
-        return new RemoteWebDriver(
-                new URL("https://" + username + ":" + accessKey + "@hub-cloud.browserstack.com/wd/hub"),
-                caps
+        String hubUrlStr = String.format(
+            "https://%s:%s@hub-eu.browserstack.com/wd/hub",
+            user, accessKey
         );
-    }
+        URL hubUrl = new URL(hubUrlStr);
+        System.out.println("»»» Conectando a BrowserStack hub: " + hubUrl);
 
+        return new RemoteWebDriver(hubUrl, caps);
+    }
 }

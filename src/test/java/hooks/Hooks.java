@@ -1,35 +1,31 @@
 package hooks;
 
 import io.cucumber.java.Before;
-import io.cucumber.java.After; 
+import io.cucumber.java.After;
 import org.openqa.selenium.WebDriver;
-import java.net.MalformedURLException;
-
 import driver.LocalDriver;
 import driver.BrowserStackDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.SessionId;
 import pages.basePage;
 
 public class Hooks {
 
     @Before(order = 0)
-    public void initDriver() throws MalformedURLException {
-        String browser = System.getProperty("browser", "chrome").toLowerCase();
+    public void initDriver() throws Exception {
+        String env = System.getProperty("environment","local").toLowerCase();
         WebDriver driver;
-        switch (browser) {
-            case "firefox":
-                driver = LocalDriver.getDriver("firefox");
-                break;
-            case "edge":
-                driver = LocalDriver.getDriver("edge");
-                break;
-            case "browserstack":
-                driver = BrowserStackDriver.getDriver();
-                break;
-            case "chrome":
-            default:
-                driver = LocalDriver.getDriver("chrome");
+        if (env.equals("browserstack")) {
+            driver = BrowserStackDriver.getDriver();
+        } else {
+            driver = LocalDriver.getDriver(env);
         }
         new basePage(driver);
+
+        if (driver instanceof RemoteWebDriver) {
+            SessionId session = ((RemoteWebDriver) driver).getSessionId();
+            System.out.println("🌐 BrowserStack session ID: " + session);
+        }
     }
 
     @Before(order = 1)

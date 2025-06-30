@@ -30,17 +30,27 @@ public class loginPage extends basePage {
     
 
     public void login(String username, String password) {
-        WebElement userField = wait.until(ExpectedConditions.elementToBeClickable(userNameField)); //webelement es un objeto que representa un elemento de la página web
-        userField.clear(); // limpia el campo para evitar errores
+        
+        WebElement userField = wait
+            .withTimeout(Duration.ofSeconds(1))
+            .until(ExpectedConditions.visibilityOfElementLocated(userNameField));
+        userField.clear();
         userField.sendKeys(username);
-
-        WebElement passField = wait.until(ExpectedConditions.elementToBeClickable(passwordField));
+    
+        
+        WebElement passField = wait
+            .withTimeout(Duration.ofSeconds(1))
+            .until(ExpectedConditions.visibilityOfElementLocated(passwordField));
         passField.clear();
         passField.sendKeys(password);
-
-        WebElement loginBtn = wait.until(ExpectedConditions.elementToBeClickable(loginButton));
+    
+        
+        WebElement loginBtn = wait
+            .withTimeout(Duration.ofSeconds(1))
+            .until(ExpectedConditions.elementToBeClickable(loginButton));
         loginBtn.click();
     }
+    
 
     public boolean isDashboardDisplayed() {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(dashboardElement)).isDisplayed();

@@ -15,11 +15,7 @@ buildscript {
     }
 }
 
-// plugins {
-//     // Apply the application plugin to add support for building a CLI application in Java.
-//     id 'application'
 
-// }
 
 plugins {
   id 'java'
@@ -69,6 +65,9 @@ dependencies {
     // // Serenity Cucumber 7: usa la versión disponible, por ejemplo 2.4.34
     // testImplementation("net.serenity-bdd:serenity-cucumber:4.2.17")
 
+    // al lado de serenity-core y serenity-cucumber
+    testImplementation 'net.serenity-bdd:serenity-browserstack:4.2.22'
+
     testImplementation 'net.serenity-bdd:serenity-core:4.2.22'
     testImplementation 'net.serenity-bdd:serenity-cucumber:4.2.22'
 
@@ -77,7 +76,7 @@ dependencies {
 
 }
 
-// Apply a specific Java toolchain to ease working on different environments.
+// para usar Java 18 con el proposito de serenity 
 java {
     sourceCompatibility = JavaVersion.VERSION_18
     targetCompatibility = JavaVersion.VERSION_18
@@ -87,20 +86,61 @@ java {
 }
 
 
-
+// ────────────────────────────────
+// 1 confi de Serenity y BrowserStack 
+// ────────────────────────────────
 tasks.named('test') {
-    systemProperty "cucumber.options", System.getProperty("cucumber.options")
-    systemProperty "serenity.requirements.dir", "requirements"
-    systemProperty "serenity.test.root", "src/test/java"
-    // Si no está definido en el entorno, por defecto chrome
-    def browser = System.getenv('BROWSER') ?: 'chrome'
-    systemProperty 'webdriver.driver', browser
+    // 1.1) Lee el environment (por defecto 'local')
+    def env = System.getProperty('environment','local').toLowerCase()
+    systemProperty 'environment', env
 
-    // // Le decimos a Serenity que NO instancie Chrome/Firefox/Edge solo,
-    // // sino que use el driver que nosotros le proporcionemos en código:
-    // systemProperty 'webdriver.driver', 'provided'
+    if (env == 'browserstack') {
+        // 1.2) Usa el driver remoto “provided”
+        systemProperty 'webdriver.driver', 'provided'
 
-    // // Propaga las -D… al proceso de tests (incluyendo -Dbrowser)
-    // systemProperties System.properties
+        // 1.3) Apunta al hub de BrowserStack EU
+        systemProperty 'webdriver.remote.url', 'https://hub-eu.browserstack.com/wd/hub'
+
+        // 1.4) Pasa el nombre de build para identificarlo en Automate
+        systemProperty 'browserstack.buildName', System.getenv('BROWSERSTACK_BUILD_NAME')
+
+        // 1.5) Reenvío de overrides CLI para capabilities
+        def bsBrowser   = System.getProperty('browserstack.capabilities.browserName')
+        def bsVersion   = System.getProperty('browserstack.capabilities.browserVersion')
+        def bsOS        = System.getProperty('browserstack.capabilities.bstack:options.os')
+        def bsOSVer     = System.getProperty('browserstack.capabilities.bstack:options.osVersion')
+        def bsResolution= System.getProperty('browserstack.capabilities.bstack:options.resolution')
+
+        if (bsBrowser)    systemProperty 'browserstack.capabilities.browserName',        bsBrowser
+        if (bsVersion)    systemProperty 'browserstack.capabilities.browserVersion',     bsVersion
+        if (bsOS)         systemProperty 'browserstack.capabilities.bstack:options.os',        bsOS
+        if (bsOSVer)      systemProperty 'browserstack.capabilities.bstack:options.osVersion', bsOSVer
+        if (bsResolution) systemProperty 'browserstack.capabilities.bstack:options.resolution', bsResolution
+    }
+    else {
+        // 1.6) En local se sigue con chrome o lo q se defina 
+        systemProperty 'webdriver.driver', System.getenv('BROWSER') ?: 'chrome'
+    }
+
+    // 1.7 para usar el reporte de Serenity 
+    systemProperty 'serenity.environment',      env
+    systemProperty 'serenity.requirements.dir', 'features'
+    systemProperty 'serenity.test.root',        'src/test/java'
+    systemProperty 'serenity.take.screenshots', 'AFTER_EACH_STEP'
 }
 
+// ────────────────────────────────────────────
+// 2) para usar BrowserStack Local y la conexión vpn 
+// ────────────────────────────────────────────
+tasks.withType(Test).configureEach {
+    systemProperty 'environment',            System.getProperty('environment')
+    systemProperty 'webdriver.driver',       System.getProperty('webdriver.driver')
+    systemProperty 'webdriver.remote.url',   System.getProperty('webdriver.remote.url')
+    systemProperty 'browserstack.buildName', System.getProperty('browserstack.buildName')
+
+    systemProperty 'browserstack.capabilities.browserName',        System.getProperty('browserstack.capabilities.browserName')
+    systemProperty 'browserstack.capabilities.browserVersion',     System.getProperty('browserstack.capabilities.browserVersion')
+    systemProperty 'browserstack.capabilities.bstack:options.os',        System.getProperty('browserstack.capabilities.bstack:options.os')
+    systemProperty 'browserstack.capabilities.bstack:options.osVersion', System.getProperty('browserstack.capabilities.bstack:options.osVersion')
+    systemProperty 'browserstack.capabilities.bstack:options.resolution', System.getProperty('browserstack.capabilities.bstack:options.resolution')
+}
