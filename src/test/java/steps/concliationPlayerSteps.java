@@ -39,7 +39,7 @@ public void deberia_visualizar_el_reporte_de_conciliacion_de_jugadores(String ex
     );
 
     //page.selectStartDateMonth("Enero"); 
-    page.setStartDateDirectly("2024-01-01T00:00:00"); 
+    page.setStartDateDirectly("2025-07-02T00:00:00"); 
 
 
     
@@ -64,7 +64,7 @@ public void deberia_visualizar_el_reporte_de_conciliacion_de_jugadores(String ex
     page.clickExportButtonMultipleTimes(10); // hace click 10 veces en el boton de exportar
 
         try {
-            Thread.sleep(5000);
+            Thread.sleep(45000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();  // restablece el estado de interrupción
             System.err.println("Sleep interrumpido: " + e.getMessage());
