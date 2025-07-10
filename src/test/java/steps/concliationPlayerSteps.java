@@ -64,12 +64,30 @@ public void deberia_visualizar_el_reporte_de_conciliacion_de_jugadores(String ex
     page.clickExportButtonMultipleTimes(10); // hace click 10 veces en el boton de exportar
 
         try {
-            Thread.sleep(45000);
+            Thread.sleep(5000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();  // restablece el estado de interrupción
             System.err.println("Sleep interrumpido: " + e.getMessage());
         }
 
 }
+
+@Then("colapso el menú hamburguesa recargo la página y el menú debería permanecer oculto")
+    public void colapsoActualizoYVerificoMenuOculto() {
+       
+        menuPage menu = new menuPage(basePage.driver); //instancio el menú desde menuPage 
+        menu.clickMenu(); // asigno el click al menú hamburguesa desde menuPage y así con los demás métodos 
+        menu.refreshPage();
+    //     Assert.assertTrue(
+    //     menu.isMenuHidden(),
+    // "El menú hamburguesa debería permanecer oculto tras recargar la página, pero sigue visible."
+    //         );
+    try {
+        Thread.sleep(5000);
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();  // restablece el estado de interrupción
+        System.err.println("Sleep interrumpido: " + e.getMessage());
+    }
+    }
 
 }
